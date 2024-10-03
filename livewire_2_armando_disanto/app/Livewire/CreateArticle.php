@@ -2,57 +2,40 @@
 
 namespace App\Livewire;
 
-use App\Models\Article;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Livewire\WithFileUploads; // Aggiungi questa riga
+use Livewire\WithFileUploads;
+use App\Models\Article;
 
 class CreateArticle extends Component
 {
-    use WithFileUploads; // Aggiungi questa riga
+    use WithFileUploads;
 
-    #[Validate('required|min:3')]
     public $title;
-
-    #[Validate('required|min:3')]
     public $subtitle;
-
-    #[Validate('required|min:3')]
     public $body;
-
-    public $img; // Variabile per l'immagine
+    public $image;
 
     public function store()
     {
-        $this->validate();
+        $this->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'required|string|max:255',
+            'body' => 'required',
+            'image' => 'nullable|max:1024',
+        ]);
 
-        // Controllo se l'immagine è stata caricata
-        if ($this->img) {
-            $imagePath = $this->img->store('images', 'public'); // Salva l'immagine
-        } else {
-            // Gestisci il caso in cui non ci sia un'immagine
-            session()->flash('message', 'Immagine non trovata.');
-            return;
-        }
+        // Salva l'immagine nella cartella pubblica e ottieni il percorso
+        $imagePath = $this->image ? $this->image->store('images', 'public') : null;
 
         Article::create([
             'title' => $this->title,
             'subtitle' => $this->subtitle,
             'body' => $this->body,
-            'img' => $imagePath,
+            'img' => $imagePath, // Salva il percorso dell'immagine nella colonna 'img'
         ]);
 
-        $this->reset();
-
-        session()->flash('message', 'Articolo creato correttamente');
-    }
-
-    protected function clearForm()
-    {
-        $this->title = "";
-        $this->subtitle = "";
-        $this->body = "";
-        $this->img = ""; // Assicurati di resettare anche l'immagine
+        session()->flash('message', 'Articolo creato con successo!');
+        return redirect()->route('articles.index');
     }
 
     public function render()

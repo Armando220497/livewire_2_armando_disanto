@@ -1,26 +1,10 @@
 <div>
     <div class="container my-5">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-6">
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+            <div class="col-12 col-md-8">
+                <form wire:submit.prevent="store" class="shadow p-5 rounded-5 bg-secondary">
 
-                @if (session('message'))
-                    <div class="alert alert-success">
-                        {{ session('message') }}
-                    </div>
-                @endif
-
-                <form class="shadow p-5 rounded-5 bg-secondary" wire:submit='store' enctype="multipart/form-data" <!--
-                    Aggiunto per gestire il caricamento dei file -->
-
+                    <!-- Titolo -->
                     <div class="mb-3">
                         <label for="title" class="form-label">Titolo Articolo</label>
                         <input wire:model="title" type="text" class="form-control" id="title">
@@ -31,6 +15,7 @@
                         </div>
                     </div>
 
+                    <!-- Sottotitolo -->
                     <div class="mb-3">
                         <label for="subtitle" class="form-label">Sottotitolo Articolo</label>
                         <input wire:model="subtitle" type="text" class="form-control" id="subtitle">
@@ -41,6 +26,7 @@
                         </div>
                     </div>
 
+                    <!-- Corpo dell'articolo -->
                     <div class="mb-3">
                         <label for="body" class="form-label">Corpo Articolo</label>
                         <textarea wire:model="body" class="form-control" id="body" cols="30" rows="10"></textarea>
@@ -51,16 +37,25 @@
                         </div>
                     </div>
 
+                    <!-- Campo per l'immagine -->
                     <div class="mb-3">
-                        <label for="img" class="form-label">Immagine Articolo</label>
-                        <input wire:model="img" type="file" class="form-control" id="img" required>
+                        <label for="image" class="form-label">Immagine Articolo</label>
+                        <input wire:model="image" type="file" class="form-control" id="image">
                         <div>
-                            @error('img')
+                            @error('image')
                                 {{ $message }}
                             @enderror
                         </div>
                     </div>
 
+                    <!-- Mostra l'anteprima dell'immagine caricata -->
+                    @if ($image)
+                        <div class="mb-3">
+                            <label>Anteprima Immagine:</label><br>
+                            <img src="{{ $image->temporaryUrl() }}" alt="Anteprima immagine" class="img-fluid"
+                                style="max-width: 200px; height: auto;">
+                        </div>
+                    @endif
 
                     <button type="submit" class="btn btn-primary">Crea articolo</button>
                 </form>

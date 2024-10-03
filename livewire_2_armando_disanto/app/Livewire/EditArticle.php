@@ -2,51 +2,55 @@
 
 namespace App\Livewire;
 
-use App\Models\Article;
 use Livewire\Component;
-use Livewire\Attributes\Validate;
+use Livewire\WithFileUploads;
+use App\Models\Article;
 
 class EditArticle extends Component
 {
-
-    #[Validate('required|min:3')]
-    public $title;
-    #[Validate('required|min:3')]
-    public $subtitle;
-    #[Validate('required|min:3')]
-    public $body;
+    use WithFileUploads;
 
     public $article;
+    public $title;
+    public $subtitle;
+    public $body;
+    public $image;
+    public $oldImage;
 
-    public function mount()
+    public function mount($article)
     {
-        $this->title = $this->article->title;
-        $this->subtitle = $this->article->subtitle;
-        $this->body = $this->article->body;
+        $this->article = $article;
+        $this->title = $article->title;
+        $this->subtitle = $article->subtitle;
+        $this->body = $article->body;
+        $this->oldImage = $article->img;
     }
-
 
     public function updateArticle()
     {
-
-        $this->validate();
-        $this->article->update([
-            "title" => $this->title,
-            "subtitle" => $this->subtitle,
-            "body" => $this->body,
+        $this->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'required|string|max:255',
+            'body' => 'required',
+            'image' => 'nullable|max:1024',
         ]);
 
-        $this->reset();
+        if ($this->image) {
+            $imageName = $this->image->store('images', 'public');
+            $this->article->img = $imageName; // Salva la nuova immagine
+        }
 
+        $this->article->title = $this->title;
+        $this->article->subtitle = $this->subtitle;
+        $this->article->body = $this->body;
+        $this->article->save();
 
-        session()->flash('message', 'Articolo aggiornato correttamente');
+        session()->flash('message', 'Articolo aggiornato con successo!');
+        return redirect()->route('articles.index');
     }
-
 
     public function render()
     {
-
-
         return view('livewire.edit-article');
     }
 }
