@@ -21,8 +21,8 @@
                                 <td>
                                     @if ($article->img)
                                         <!-- Controlla se esiste un'immagine -->
-                                        <img src="{{ asset('storage/' . $article->img) }}" alt="{{ $article->title }}"
-                                            width="100"> <!-- Visualizza l'immagine -->
+                                        <img src="{{ Storage::url($article->img) }}" alt="{{ $article->title }}"
+                                            style="width: 100px;">
                                     @else
                                         <span>Nessuna immagine</span> <!-- Messaggio se non c'è un'immagine -->
                                     @endif
@@ -32,7 +32,7 @@
                                         href="{{ route('articles.show', compact('article')) }}">Mostra</a>
                                     <a class="btn btn-warning"
                                         href="{{ route('articles.edit', compact('article')) }}">Modifica</a>
-                                    <button wire:click="destroy({{ $article }})"
+                                    <button wire:click="destroy({{ $article->id }})"
                                         class="btn btn-danger">Elimina</button>
                                 </td>
                             </tr>
